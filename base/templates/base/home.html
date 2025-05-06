@@ -2,32 +2,128 @@
 
 {% block content %}
 
-    <style>
-        .home-container {
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr;
-        }
-    </style>
+<style>
+    .home-container {
+        display: flex;
+        gap: 2rem;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    <div class="home-container">
+    .home-container>div {
+        flex: 1;
+    }
 
-        <div>
-            {% include 'base/topics_component.html' %}
-        </div>
+    .home-container>div.middle {
+        flex: 2;
+    }
 
-        <div>
-            <h5>{{room_count}} rooms available</h5>
-            <a href="{% url 'create-room' %}">Create Room</a>
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
 
-            <div>
-                {% include 'base/feed_component.html' %}
+    .section-header h5 {
+        margin: 0;
+    }
+
+    .section-header a {
+        text-decoration: none;
+        color: white;
+        background-color: black;
+        padding: 6px 12px;
+        border-radius: 5px;
+    }
+
+    .room-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background: white;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    .room-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .room-topic {
+        background-color: #007BFF;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .room-controls a {
+        margin-left: 10px;
+        color: #007BFF;
+        font-size: 0.9rem;
+        text-decoration: none;
+    }
+
+    .room-controls a:hover {
+        text-decoration: underline;
+    }
+
+    .room-meta .username {
+        font-size: 0.9rem;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .room-meta .username:hover {
+        text-decoration: underline;
+    }
+
+    .room-title a {
+        color: #222;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 1.1rem;
+    }
+
+    .room-title a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="home-container">
+
+    <div class="middle">
+        <div class="section-header">
+            <a href="{% url 'create-room' %}"
+                style="background: black; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none;">
+                Create Room
+            </a>
+            <div class="filters" style="display: flex; gap: 1rem;">
+                <a href="{% url 'home' %}?type=all" class="{% if filter == 'all' %}active{% endif %}"
+                    style="background: black; color: white; padding: 6px 12px; border-radius: 5px;">All</a>
+                <a href="{% url 'home' %}?type=requested" class="{% if filter == 'requested' %}active{% endif %}"
+                    style="background: black; color: white; padding: 6px 12px; border-radius: 5px;">Requested</a>
+                <a href="{% url 'home' %}?type=scheduled" class="{% if filter == 'scheduled' %}active{% endif %}"
+                    style="background: black; color: white; padding: 6px 12px; border-radius: 5px;">Scheduled</a>
             </div>
         </div>
 
-        <div>
-            {% include 'base/activity_component.html' %}
-        </div>
 
+
+
+
+        <div>
+            {% include 'base/feed_component.html' %}
+        </div>
     </div>
+
+</div>
 
 {% endblock %}

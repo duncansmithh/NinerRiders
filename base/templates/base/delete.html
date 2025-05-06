@@ -1,12 +1,65 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+    .delete-container {
+        max-width: 600px;
+        margin: 5rem auto;
+        padding: 2rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+    }
 
-<form method="POST" action="">
-    {% csrf_token %}
-    <p>Are you sure you want to delete "{{obj}}"?</p>
-    <a href="{{request.META.HTTP_REFERER}}">Go Back</a>
-    <input type="submit" value="Confirm">
-</form>
+    .delete-container p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
 
+    .delete-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .delete-buttons a,
+    .delete-buttons input[type="submit"] {
+        text-decoration: none;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .delete-buttons a {
+        background-color: #ddd;
+        color: black;
+    }
+
+    .delete-buttons input[type="submit"] {
+        background-color: #ff4d4d;
+        color: white;
+    }
+
+    .delete-buttons input[type="submit"]:hover {
+        background-color: #e60000;
+    }
+
+    .delete-buttons a:hover {
+        background-color: #bbb;
+    }
+</style>
+
+<div class="delete-container">
+    <p>Are you sure you want to delete "<strong>{{obj}}</strong>"?</p>
+    <form method="POST" class="delete-buttons">
+        {% csrf_token %}
+        <a href="{{request.META.HTTP_REFERER}}">Go Back</a>
+        <input type="submit" value="Confirm">
+    </form>
+</div>
 {% endblock content %}

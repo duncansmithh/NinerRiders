@@ -1,16 +1,58 @@
-<a href="/">
-    <h1>LOGO</h1>
-</a>
+<style>
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background: white;
+        border-bottom: 1px solid #ccc;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-<form method="GET" action="{% url 'home' %}">
-    <input type="text" name="q" placeholder="Search Rooms...">
-</form>
+    .navbar h1 {
+        margin: 0;
+        color: #004d40;
+        font-size: 24px;
+    }
 
-{% if request.user.is_authenticated %}
-<p>Hello {{request.user}}</p>
-<a href="{% url 'logout' %}">Logout</a>
-{% else %}
-<a href="{% url 'login' %}">Login</a>
-{% endif %}
+    .navbar form {
+        display: flex;
+    }
 
-<hr>
+    .navbar input[type="text"] {
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .nav-links a {
+        color: #00796b;
+        text-decoration: none;
+        font-weight: 500;
+    }
+</style>
+
+<div class="navbar">
+    <a href="/">
+        <h1>NinerRiders</h1>
+    </a>
+
+    <form method="GET" action="{% url 'home' %}">
+        <input type="text" name="q" placeholder="Search Rooms...">
+    </form>
+
+    <div class="nav-links">
+        {% if request.user.is_authenticated %}
+        <span>Hello, {{request.user.username}}</span>
+        <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
+</div>

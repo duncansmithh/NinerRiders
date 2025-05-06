@@ -6,7 +6,7 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>NinerRiders</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href="{% static 'styles/main.css' %}">
+    <link rel='stylesheet' type='text/css' media='screen' href="{% static 'static/styles/main.css' %}">
 </head>
 <body>
     {% include 'navbar.html' %}
@@ -25,5 +25,30 @@
 
     {% endblock %}
     
+    <style>
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #ccc;
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem 0;
+            z-index: 1000;
+        }
+        .bottom-nav a {
+            color: #00796b;
+            font-weight: 600;
+        }
+        </style>
+        
+        <div class="bottom-nav">
+            <a href="#">Messages</a>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="#">Rides</a>
+        </div>
+        
 </body>
 </html>

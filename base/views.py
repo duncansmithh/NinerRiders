@@ -63,7 +63,8 @@ def registerPage(request):
     return render(request, 'base/login_register.html', {'form': form})
  
 def home(request):
-    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    q = request.GET.get('q') if request.GET.get('q') else ''
+    filter_type = request.GET.get('type', 'all')
 
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
@@ -71,13 +72,24 @@ def home(request):
         Q(description__icontains=q)
     )
 
+    if filter_type == 'requested':
+        rooms = rooms.filter(topic__name__iexact='Requested')
+    elif filter_type == 'scheduled':
+        rooms = rooms.filter(topic__name__iexact='Scheduled')
+
     topics = Topic.objects.all()
     room_count = rooms.count()
     room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
 
-    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count, 
-               'room_messages': room_messages}
+    context = {
+        'rooms': rooms,
+        'topics': topics,
+        'room_count': room_count,
+        'room_messages': room_messages,
+        'filter': filter_type
+    }
     return render(request, 'base/home.html', context)
+
 
 def room(request, pk):
     room = Room.objects.get(id=pk)
