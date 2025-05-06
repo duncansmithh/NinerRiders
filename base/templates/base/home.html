@@ -2,19 +2,32 @@
 
 {% block content %}
 
-<h1>Home Template</h1>
+    <style>
+        .home-container {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+        }
+    </style>
 
-<div>
+    <div class="home-container">
 
-    <div>
-        {% for room in rooms %}
+        <div>
+            {% include 'base/topics_component.html' %}
+        </div>
+
+        <div>
+            <h5>{{room_count}} rooms available</h5>
+            <a href="{% url 'create-room' %}">Create Room</a>
+
             <div>
-                <h5>{{room.id}} -- {{room.name}}</h5>
+                {% include 'base/feed_component.html' %}
             </div>
+        </div>
 
-        {% endfor %}
+        <div>
+            {% include 'base/activity_component.html' %}
+        </div>
+
     </div>
-
-</div>
 
 {% endblock %}
