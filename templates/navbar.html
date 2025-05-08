@@ -1,28 +1,26 @@
 <style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
     .navbar {
+        background: #f7f7f7;
+        border-bottom: 1px solid #ccc;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 1rem 2rem;
-        background: white;
-        border-bottom: 1px solid #ccc;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-sizing: border-box;
     }
 
     .navbar h1 {
         margin: 0;
-        color: #004d40;
+        color: #046A38;
         font-size: 24px;
-    }
-
-    .navbar form {
-        display: flex;
-    }
-
-    .navbar input[type="text"] {
-        padding: 6px 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
     }
 
     .nav-links {
@@ -32,25 +30,75 @@
     }
 
     .nav-links a {
-        color: #00796b;
+        color: #046A38;
         text-decoration: none;
         font-weight: 500;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropbtn {
+        background: none;
+        border: none;
+        color: #046A38;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: white;
+        min-width: 120px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .dropdown-content a {
+        color: #046A38;
+        padding: 8px 12px;
+        display: block;
+        text-decoration: none;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f2f2f2;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
     }
 </style>
 
 <div class="navbar">
-    <a href="/">
+    <a href="/" style="text-decoration: none;">
         <h1>NinerRiders</h1>
     </a>
 
-    <form method="GET" action="{% url 'home' %}">
-        <input type="text" name="q" placeholder="Search Rooms...">
-    </form>
-
     <div class="nav-links">
         {% if request.user.is_authenticated %}
-        <span>Hello, {{request.user.username}}</span>
-        <a href="{% url 'logout' %}">Logout</a>
+        <div class="dropdown">
+            <button class="dropbtn">
+                <img src="https://www.gravatar.com/avatar/?s=28&d=mp" alt="{{ request.user.username }}'s avatar"
+                    style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid #046A38;">
+                <strong>@{{ request.user.username }}</strong> ▾
+            </button>
+
+            <div class="dropdown-content">
+                <a href="{% url 'user-profile' request.user.id %}">Profile</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
         {% else %}
         <a href="{% url 'login' %}">Login</a>
         {% endif %}

@@ -1,25 +1,187 @@
 {% extends 'main.html' %}
-
 {% block content %}
 
 <style>
     .profile-container {
-        display: grid;
-        grid-template-columns: 1fr 3fr 1fr;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .class-schedule,
+    .user-rooms {
+        margin-top: 2rem;
+    }
+
+    .class-schedule h3,
+    .user-rooms h3 {
+        margin-bottom: 0.5rem;
+    }
+
+    .class-schedule ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .class-schedule li {
+        background-color: #f7f7f7;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .class-schedule .delete-btn button {
+        background: none;
+        border: none;
+        color: #007BFF;
+        font-size: 0.9rem;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .class-schedule .delete-btn button:hover {
+        text-decoration: underline;
+    }
+
+    .add-class-link {
+        display: inline-block;
+        margin-bottom: 1rem;
+        text-decoration: none;
+        background-color: #046A38;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 5px;
+    }
+
+    .feed-entry {
+        background: #f7f7f7;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+
+    .feed-entry h5 a {
+        color: #333;
+        font-size: 1.1rem;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .feed-entry h5 a:hover {
+        text-decoration: underline;
+    }
+
+    .feed-entry .room-topic {
+        background-color: #046A38;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 0.25rem;
+    }
+
+    .feed-entry .room-time {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 0.85rem;
+        color: #888;
+    }
+
+    .feed-entry .room-controls {
+        text-align: right;
+        margin-top: 1rem;
+    }
+
+    .feed-entry .room-controls a {
+        margin-left: 10px;
+        color: #007BFF;
+        font-size: 0.9rem;
+        text-decoration: none;
+    }
+
+    .feed-entry .room-controls a:hover {
+        text-decoration: underline;
     }
 </style>
 
-<h1>{{user.username}}</h1>
-
 <div class="profile-container">
-    <div>
-        {% include 'base/topics_component.html' %}
+    <div class="section-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <img src="https://www.gravatar.com/avatar/?s=50&d=mp"
+                 alt="{{ user.username }}'s avatar"
+                 style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #046A38;">
+            <h1 style="color: #046A38;">@{{ user.username }}</h1>
+        </div>
     </div>
-    <div>
-        {% include 'base/feed_component.html' %}
+
+    <div class="class-schedule">
+        <h3>Class Schedule</h3>
+
+        <ul>
+            {% for cls in user_classes %}
+            <li>
+                <span>
+                    {{ cls.course_name }} —
+                    {% for day in cls.days.all %}
+                    {{ day.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                    — {{ cls.start_time|time:"g:i A" }} to {{ cls.end_time|time:"g:i A" }}
+                </span>
+                {% if request.user == user %}
+                <span class="delete-btn">
+                    <form action="{% url 'delete-class' cls.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                </span>
+                {% endif %}
+            </li>
+            {% empty %}
+            <li>No classes added yet.</li>
+            {% endfor %}
+        </ul>
+
+        {% if request.user == user %}
+        <a class="add-class-link" href="{% url 'add-class' %}">+ Add Class</a>
+        {% endif %}
     </div>
-    <div>
-        {% include 'base/activity_component.html' %}
+
+    <div class="user-rooms">
+        <h3>Ride Posts</h3>
+        <div>
+            {% for room in rooms %}
+            <div class="feed-entry">
+                <div class="room-topic">{{ room.topic.name|upper }}</div>
+                <div class="room-time">{{ room.created|timesince }} ago</div>
+                <h5><a href="{% url 'room' room.id %}">{{ room.name }}</a></h5>
+                {% if request.user == room.host %}
+                <div class="room-controls">
+                    <a href="{% url 'update-room' room.id %}">Edit</a>
+                    <a href="{% url 'delete-room' room.id %}">Delete</a>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p>No ride posts yet.</p>
+            {% endfor %}
+        </div>
     </div>
 </div>
 

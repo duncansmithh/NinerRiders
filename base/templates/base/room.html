@@ -16,9 +16,19 @@
     }
 
     .room-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         font-size: 0.95rem;
         color: #555;
         margin-bottom: 1.5rem;
+    }
+
+    .room-meta img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid #046A38;
     }
 
     .room-description {
@@ -41,9 +51,18 @@
     }
 
     .comment small {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         color: #666;
-        display: block;
         margin-bottom: 0.3rem;
+    }
+
+    .comment .avatar {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid #046A38;
     }
 
     .comment .delete-link {
@@ -51,7 +70,7 @@
         top: 10px;
         right: 10px;
         font-size: 0.9rem;
-        color: #007BFF;
+        color: #046A38;
         text-decoration: none;
     }
 
@@ -61,18 +80,22 @@
 
     .comment-form input[type="text"] {
         width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
         padding: 0.75rem;
         font-size: 1rem;
         margin-top: 1rem;
         border-radius: 6px;
         border: 1px solid #ccc;
+        background: #f9f9f9;
     }
 
     .sidebar {
-        background: #fafafa;
-        border-left: 1px solid #eee;
-        padding-left: 1rem;
-    }
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+}
 
     .sidebar h3 {
         font-size: 1rem;
@@ -80,8 +103,19 @@
     }
 
     .participant-name {
-        padding: 0.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0;
         font-size: 0.95rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .participant-name img {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid #046A38;
     }
 </style>
 
@@ -89,7 +123,13 @@
 
     <div>
         <h1 class="room-title">{{ room.name }}</h1>
-        <p class="room-meta">User: <strong>{{ room.host.username }}</strong></p>
+        <p class="room-meta">
+            <img src="https://www.gravatar.com/avatar/?s=28&d=mp" alt="avatar">
+            <a href="{% url 'user-profile' room.host.id %}" style="color: #046A38; text-decoration: none;">
+                <strong>@{{ room.host.username }}</strong>
+            </a>
+        </p>
+
         <p class="room-description">{{ room.description }}</p>
 
         <div class="comment-wrapper">
@@ -98,11 +138,19 @@
 
             {% for message in room_messages %}
             <div class="comment">
-                {% if request.user == message.user %}
-                <a class="delete-link" href="{% url 'delete-message' message.id %}">Delete</a>
-                {% endif %}
-                <small>{{ message.user.username }} — {{ message.created|timesince }} ago</small>
+                <small>
+                    <img class="avatar" src="https://www.gravatar.com/avatar/?s=28&d=mp" alt="avatar">
+                    <strong><a href="{% url 'user-profile' message.user.id %}"
+                            style="color: #046A38; text-decoration: none;">@{{ message.user.username }}</a></strong>
+
+                    — {{ message.created|timesince }} ago
+                </small>
                 <p>{{ message.body }}</p>
+                {% if request.user == message.user %}
+                <div class="comment-controls" style="text-align: right; margin-top: -0.5rem;">
+                    <a href="{% url 'delete-message' message.id %}" style="color: #007BFF; text-decoration: none;">Delete</a>
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
@@ -121,7 +169,12 @@
         <h3>Participants</h3>
         <hr>
         {% for user in participants %}
-        <div class="participant-name">{{ user.username }}</div>
+        <div class="participant-name">
+            <img src="https://www.gravatar.com/avatar/?s=28&d=mp" alt="avatar">
+            <strong><a href="{% url 'user-profile' user.id %}" 
+                style="color: #046A38; text-decoration: none;">@{{ user.username }}</a></strong>
+
+        </div>
         {% endfor %}
     </div>
 

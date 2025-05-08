@@ -8,6 +8,8 @@
         gap: 2rem;
         padding: 2rem;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1000px;
+        margin: 0 auto;
     }
 
     .home-container>div {
@@ -55,7 +57,7 @@
     }
 
     .room-topic {
-        background-color: #007BFF;
+        background-color: #046A38;
         color: white;
         padding: 4px 10px;
         border-radius: 20px;
@@ -66,7 +68,7 @@
 
     .room-controls a {
         margin-left: 10px;
-        color: #007BFF;
+        color: #046A38;
         font-size: 0.9rem;
         text-decoration: none;
     }
@@ -95,29 +97,45 @@
     .room-title a:hover {
         text-decoration: underline;
     }
+
+    .room-header {
+        position: relative;
+    }
+
+    .room-time {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 0.85rem;
+        color: #888;
+    }
 </style>
 
 <div class="home-container">
 
     <div class="middle">
         <div class="section-header">
-            <a href="{% url 'create-room' %}"
-                style="background: black; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none;">
-                Create Room
-            </a>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <a href="{% url 'create-room' %}"
+                    style="background: #046A38; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none;">
+                    Create Room
+                </a>
+
+                <form method="GET" action="{% url 'home' %}">
+                    <input type="text" name="q" placeholder="Search Rooms..."
+                        style="padding: 6px 12px; border-radius: 5px; border: 1px solid #ccc;">
+                </form>
+            </div>
+
             <div class="filters" style="display: flex; gap: 1rem;">
                 <a href="{% url 'home' %}?type=all" class="{% if filter == 'all' %}active{% endif %}"
-                    style="background: black; color: white; padding: 6px 12px; border-radius: 5px;">All</a>
+                    style="background: #046A38; color: white; padding: 6px 12px; border-radius: 5px;">All</a>
                 <a href="{% url 'home' %}?type=requested" class="{% if filter == 'requested' %}active{% endif %}"
-                    style="background: black; color: white; padding: 6px 12px; border-radius: 5px;">Requested</a>
+                    style="background: #046A38; color: white; padding: 6px 12px; border-radius: 5px;">Requested</a>
                 <a href="{% url 'home' %}?type=scheduled" class="{% if filter == 'scheduled' %}active{% endif %}"
-                    style="background: black; color: white; padding: 6px 12px; border-radius: 5px;">Scheduled</a>
+                    style="background: #046A38; color: white; padding: 6px 12px; border-radius: 5px;">Scheduled</a>
             </div>
         </div>
-
-
-
-
 
         <div>
             {% include 'base/feed_component.html' %}

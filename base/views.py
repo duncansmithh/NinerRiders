@@ -8,6 +8,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from .models import Room, Topic, Message
 from .forms import RoomForm
+from .forms import ClassScheduleForm
+from .models import ClassSchedule
+from django.shortcuts import get_object_or_404
+from .forms import CustomUserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
+
 # Create your views here.
 
 # rooms = [
@@ -18,39 +24,39 @@ from .forms import RoomForm
 
 def loginPage(request):
     page = 'login'
+    form = AuthenticationForm()
 
     if request.user.is_authenticated:
         return redirect('home')
 
     if request.method == 'POST':
-        username = request.POST.get('username').lower()
-        password = request.POST.get('password')
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username').lower()
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
 
-        try :
-            user = User.objects.get(username=username)
-        except:
-            messages.error(request, 'User does not exist')
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect('home')
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request, 'Invalid credentials')
         else:
-            messages.error(request, 'Username OR password does not exist')
+            messages.error(request, 'Invalid login attempt')
 
-    context = {'page': page}
-    return render(request, 'base/login_register.html', context)
+    return render(request, 'base/login_register.html', {'form': form, 'page': page})
+
 
 def logoutUser(request):
     logout(request)
     return redirect('home')
 
 def registerPage(request):
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
+    page = 'register'
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -58,9 +64,10 @@ def registerPage(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, 'An error occured during registration')
+            messages.error(request, 'An error occurred during registration')
 
-    return render(request, 'base/login_register.html', {'form': form})
+    return render(request, 'base/login_register.html', {'form': form, 'page': page})
+
  
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') else ''
@@ -93,7 +100,7 @@ def home(request):
 
 def room(request, pk):
     room = Room.objects.get(id=pk)
-    room_messages = room.message_set.all()
+    room_messages = room.message_set.all().order_by('created')
     participants = room.participants.all()
     if request.method == 'POST':
         message = Message.objects.create(
@@ -113,8 +120,9 @@ def userProfile(request, pk):
     rooms = user.room_set.all()
     room_messages = user.message_set.all()
     topics = Topic.objects.all()
+    user_classes = ClassSchedule.objects.filter(user=user)
     context = {'user': user, 'rooms': rooms, 
-               'room_messages': room_messages, 'topics': topics}
+               'room_messages': room_messages, 'topics': topics, 'user_classes': user_classes,}
     return render(request, 'base/profile.html', context)
 
 @login_required(login_url='login')
@@ -174,3 +182,29 @@ def deleteMessage(request, pk):
         return redirect('home')
 
     return render(request, 'base/delete.html', {'obj':message})
+
+@login_required(login_url='login')
+def add_class(request):
+    form = ClassScheduleForm()
+    if request.method == 'POST':
+        form = ClassScheduleForm(request.POST)
+        if form.is_valid():
+            class_obj = form.save(commit=False)
+            class_obj.user = request.user
+            class_obj.save()
+            form.save_m2m()
+            return redirect('user-profile', pk=request.user.id)
+    return render(request, 'base/add_class.html', {'form': form})
+
+@login_required(login_url='login')
+def delete_class(request, pk):
+    class_obj = get_object_or_404(ClassSchedule, id=pk)
+
+    if request.user != class_obj.user:
+        return HttpResponse('You are not allowed to delete this class.')
+
+    if request.method == 'POST':
+        class_obj.delete()
+        return redirect('user-profile', pk=request.user.id)
+
+    return render(request, 'base/delete.html', {'obj': class_obj})

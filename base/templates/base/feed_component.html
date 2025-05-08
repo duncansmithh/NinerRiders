@@ -1,22 +1,31 @@
+{% load static %}
+
 {% for room in rooms %}
-<div class="room-card">
+<div class="room-card" style="background: #f7f7f7;">
     <div class="room-header">
         <span class="room-topic">{{ room.topic.name|upper }}</span>
-        {% if request.user == room.host %}
-        <div class="room-controls">
-            <a href="{% url 'update-room' room.id %}">Edit</a>
-            <a href="{% url 'delete-room' room.id %}">Delete</a>
-        </div>
-        {% endif %}
     </div>
 
-    <div class="room-meta">
-        <a class="username" href="{% url 'user-profile' room.host.id %}">{{ room.host.username }}</a>
+    <div class="room-time">{{ room.created|timesince }} ago</div>
+
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+        <img src="https://www.gravatar.com/avatar/?s=28&d=mp" alt="{{ room.host.username }}'s avatar" style="border-radius: 50%; border: 2px solid #00796b;
+" ">
+        <a href=" {% url 'user-profile' room.host.id %}" style="color: #046A38; text-decoration: none;">
+        <strong>@{{ room.host.username }}</strong>
+        </a>
     </div>
 
     <h5 class="room-title">
         <a href="{% url 'room' room.id %}">{{ room.name }}</a>
     </h5>
+
+    {% if request.user == room.host %}
+    <div class="room-controls" style="text-align: right; margin-top: 0.5rem;">
+        <a href="{% url 'update-room' room.id %}" style="color: #007BFF;">Edit</a>
+        <a href="{% url 'delete-room' room.id %}" style="color: #007BFF;">Delete</a>
+    </div>
+    {% endif %}
 </div>
 {% empty %}
 <p>No posts to show.</p>

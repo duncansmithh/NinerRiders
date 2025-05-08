@@ -37,3 +37,19 @@ class Message(models.Model):
 
     def __str__(self):
         return self.body[0:50]
+    
+class Day(models.Model):
+    name = models.CharField(max_length=9)  # e.g., "Monday"
+
+    def __str__(self):
+        return self.name
+
+class ClassSchedule(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course_name = models.CharField(max_length=100)
+    days = models.ManyToManyField(Day)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return f"{self.course_name} ({self.start_time}-{self.end_time})"
